@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -8,64 +7,57 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+##  Overview
+Artship is a comprehensive Laravel-based e-learning platform designed specifically for art education. It enables artists to teach and learn art through structured courses while providing tools for course management, progress tracking, and community engagement through artwork sharing.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+##  Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### **Course Management**
+- **Admin Course Control**: Create, edit, and delete art courses
+- **Category Filtering**: Browse courses by artistic categories (digital painting, watercolor, sculpture, etc.)
+- **Wishlist System**: Save courses for later enrollment
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### **Learning Experience**
+- **Course Enrollment**: One-click enrollment/unenrollment system
+- **Progress Tracker**: Visual progress tracking for each enrolled course
+- **Course Materials**: Upload and manage lecture videos (via embedded links) and downloadable PDFs
+- **Course Reviews**: Rate and review completed courses
 
-## Learning Laravel
+### **Artwork Portfolio & Community**
+- **Artwork Submission**: Students can upload their final artworks at course completion
+- **Featured Gallery**: Admins can showcase exceptional student artworks on a featured page
+- **Social Engagement**: Users can like and appreciate featured artworks with visible like counts
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+##  Technology Stack
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### **Backend**
+- **Laravel 10** - PHP Framework
+- **MySQL** - Database
+- **Eloquent ORM** - Database Management
+- **Blade Templates** - Server-side rendering
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### **Frontend**
+- **Bootstrap 5** - Responsive design
+- **JavaScript** - Interactive features
+- **CSS3** - Custom styling
 
-## Laravel Sponsors
+### **Key Integrations**
+- **File Upload System** - For thumbnails, PDFs, and artwork images
+- **Video Embedding** - Support for YouTube/Vimeo integration
+- **Authentication System** - User registration and role-based access (Admin/Student)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+##  Architecture
+- **MVC Pattern** - Clean separation of concerns
+- **RESTful Routing** - Logical URL structure
+- **Middleware Protection** - Route protection and validation
+- **Eloquent Relationships** - Efficient database modeling
 
-### Premium Partners
+##  Contributing
+This is a BRACU Software Engineering project (CSE470) demonstrating full-stack web development with Laravel. Feel free to explore the codebase for educational purposes.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+##  License
+This project is for portfolio purposes. All rights reserved.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-=======
-# Artship-An-Art-Learning-Platform
-
->>>>>>> b0e18e03aad6a8514d9b6e4ff22d8c95c7d71c2b
+**Artship** represents a complete e-learning solution built with modern web development practices, focusing on providing a seamless experience for both art educators and students while fostering a creative community.
