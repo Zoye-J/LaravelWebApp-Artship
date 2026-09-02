@@ -2,26 +2,42 @@
 
 namespace App\Models;
 
+use App\Traits\EncryptableFields;
+use App\Traits\IntegrityProtected;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Category;
-
 
 class Course extends Model
 {
- 
+    use HasFactory;
+    
+    // ============================================
+    // PERSON 3: Added encryption traits
+    // ============================================
+    use EncryptableFields, IntegrityProtected;
+
+    /**
+     * PERSON 3: Define which fields need encryption
+     */
+    protected $encryptable = ['title', 'description', 'category', 'thumbnail'];
+    
+    /**
+     * PERSON 3: Define which fields need MAC verification
+     */
+    protected $macProtected = ['title', 'description', 'category'];
+
     protected $fillable = ['title', 'description', 'category', 'thumbnail'];
 
-
-    use HasFactory;
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
+
     public function wishlistedBy()
     {
         return $this->hasMany(Wishlist::class);
     }
+
     public function materials()
     {
         return $this->hasMany(CourseMaterial::class);
@@ -52,8 +68,16 @@ class Course extends Model
         return $this->ratings()->count();
     }
 
-
-
-
+    // ============================================
+    // PERSON 3: Override save to handle encryption
+    // ============================================
+    public function save(array $options = [])
+    {
+        // Encrypt before saving
+        $this->encryptFields();
+        parent::save($options);
+        // Generate MAC after saving with encrypted values
+        $this->generateMac();
+        parent::save($options);
+    }
 }
-

@@ -7,11 +7,17 @@ use App\Models\Course;
 use App\Models\CourseMaterial;
 use App\Models\Enrollment;
 use App\Models\ViewedMaterial;
-
-
+use App\Services\EncryptionHelper;
 
 class CourseController extends Controller
 {
+    protected $encryptionHelper;
+
+    public function __construct()
+    {
+        $this->encryptionHelper = new EncryptionHelper();
+    }
+
     public function index(Request $request)
     {
         $selectedCategory = $request->input('category');
@@ -22,7 +28,21 @@ class CourseController extends Controller
             $query->where('category', $selectedCategory);
         }
 
+        // ============================================
+        // PERSON 3: Data is automatically decrypted via trait
+        // ============================================
         $courses = $query->latest()->get();
+
+        // Check integrity for each course
+        foreach ($courses as $course) {
+            if ($course->hasIntegrityFailed()) {
+                session()->flash('integrity_failure', true);
+                \Log::warning('Integrity failure in course', [
+                    'id' => $course->id,
+                    'field' => $course->getFailedField()
+                ]);
+            }
+        }
 
         return view('courses.index', compact('courses'));
     }
@@ -48,21 +68,36 @@ class CourseController extends Controller
             $validated['thumbnail'] = 'thumbnails/' . $filename;
         }
 
-        Course::create($validated);
+        // ============================================
+        // PERSON 3: Data is automatically encrypted via trait
+        // ============================================
+        $course = Course::create($validated);
+
+        if ($course->hasIntegrityFailed()) {
+            return redirect()->back()->with('error', 'Data integrity check failed. Please try again.');
+        }
 
         return redirect()->route('courses.index')->with('success', 'Course added successfully.');
     }
 
     public function show(Request $request, $id)
     {
+        // ============================================
+        // PERSON 3: Data is automatically decrypted via trait
+        // ============================================
         $course = Course::findOrFail($id);
+        
+        if ($course->hasIntegrityFailed()) {
+            session()->flash('integrity_failure', true);
+            session()->flash('integrity_failure_field', $course->getFailedField());
+        }
+
         $tab = $request->get('tab', 'videos');
 
         $materials = CourseMaterial::where('course_id', $id)
             ->where('type', $tab === 'videos' ? 'video' : 'pdf')
             ->get();
 
-    // Check if user is enrolled and get progress
         $isEnrolled = auth()->check() && auth()->user()->courses->contains($course->id);
         $progress = 0;
 
@@ -87,13 +122,11 @@ class CourseController extends Controller
             return response()->json(['error' => 'Not enrolled'], 403);
         }
 
-    // Mark material as viewed
         ViewedMaterial::firstOrCreate([
             'user_id' => auth()->id(),
             'course_material_id' => $materialId
         ]);
 
-    // Update progress directly (no trait needed)
         $enrollment = Enrollment::where('user_id', auth()->id())
             ->where('course_id', $courseId)
             ->first();
@@ -159,5 +192,3 @@ class CourseController extends Controller
             ->with('error', 'You are not enrolled in this course');
     }
 }
-
-

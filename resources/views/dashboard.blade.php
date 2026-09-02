@@ -78,7 +78,7 @@
         <main class="flex-1 p-6">
             <!-- Original Dashboard Content -->
             <div class="relative rounded overflow-hidden shadow-lg">
-                <img src="{{ asset('images/dashboard-banner.jpg') }}" alt="Welcome Banner" class="w-full h-64 object-cover">
+                <img src="{{ asset('images/dashboard-banner.png') }}" alt="Welcome Banner" class="w-full h-64 object-cover">
                 <div class="absolute top-0 left-0 w-full h-full flex items-start justify-start p-7">
                     <div class="text-white font-bold text-6xl leading-tight drop-shadow-[2px_2px_5px_rgba(0,0,0,0.6)]">
                         <p>Welcome</p>

@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\ArtworkSubmission;
 use App\Models\ArtworkLike;
 use App\Models\Course;
+use App\Services\EncryptionHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-
 class ArtworkController extends Controller
 {
-    // Show form for submitting artwork
+    protected $encryptionHelper;
+
+    public function __construct()
+    {
+        $this->encryptionHelper = new EncryptionHelper();
+    }
+
     public function create(Course $course)
     {
-        // Check if user is enrolled
         if (!auth()->user()->courses->contains($course->id)) {
             return redirect()->back()->with('error', 'You must be enrolled in the course to submit artwork.');
         }
@@ -23,7 +27,6 @@ class ArtworkController extends Controller
         return view('artwork.create', compact('course'));
     }
 
-    // Store artwork submission
     public function store(Request $request, Course $course)
     {
         $request->validate([
@@ -35,7 +38,11 @@ class ArtworkController extends Controller
         // Upload image
         $imagePath = $request->file('image')->store('artwork_submissions', 'public');
 
-        ArtworkSubmission::create([
+        // ============================================
+        // PERSON 3: Data is automatically encrypted via trait
+        // No need to manually encrypt here
+        // ============================================
+        $artwork = ArtworkSubmission::create([
             'user_id' => auth()->id(),
             'course_id' => $course->id,
             'title' => $request->title,
@@ -43,9 +50,15 @@ class ArtworkController extends Controller
             'image_path' => $imagePath
         ]);
 
+        // Check if integrity was maintained
+        if ($artwork->hasIntegrityFailed()) {
+            return redirect()->back()->with('error', 'Data integrity check failed. Please try again.');
+        }
+
         return redirect()->route('courses.show', $course->id)
             ->with('success', 'Artwork submitted successfully! It will be reviewed by admins.');
     }
+
     public function markAsViewed(ArtworkSubmission $artwork)
     {
         $artwork->update(['viewed_at' => now()]);
@@ -58,29 +71,40 @@ class ArtworkController extends Controller
         return response()->json(['success' => true]);
     }
 
-    // Admin: View all submissions
     public function index()
     {
+        // ============================================
+        // PERSON 3: Data is automatically decrypted via trait
+        // when retrieved from database
+        // ============================================
         $submissions = ArtworkSubmission::with(['user', 'course'])
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // Check for integrity failures
+        foreach ($submissions as $submission) {
+            if ($submission->hasIntegrityFailed()) {
+                session()->flash('integrity_failure', true);
+                session()->flash('integrity_failure_field', $submission->getFailedField());
+                \Log::warning('Integrity failure in artwork submission', [
+                    'id' => $submission->id,
+                    'field' => $submission->getFailedField()
+                ]);
+            }
+        }
+
         return view('artwork.index', compact('submissions'));
     }
 
-    // Admin: Feature an artwork
     public function feature(ArtworkSubmission $artwork)
     {
         $artwork->update(['is_featured' => true]);
-
         return back()->with('success', 'Artwork featured successfully!');
     }
 
-    // Admin: Unfeature an artwork
     public function unfeature(ArtworkSubmission $artwork)
     {
         $artwork->update(['is_featured' => false]);
-
         return back()->with('success', 'Artwork unfeatured successfully!');
     }
 
@@ -92,20 +116,18 @@ class ArtworkController extends Controller
 
         if ($like) {
             $like->delete();
-            $artwork->decrement('likes_count');
             $isLiked = false;
         } else {
             ArtworkLike::create([
                 'user_id' => auth()->id(),
                 'artwork_id' => $artwork->id
             ]);
-            $artwork->increment('likes_count');
             $isLiked = true;
         }
 
         return response()->json([
             'success' => true,
-            'likes_count' => $artwork->fresh()->likes_count,
+            'likes_count' => $artwork->fresh()->likes()->count(),
             'is_liked' => $isLiked
         ]);
     }

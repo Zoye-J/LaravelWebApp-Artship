@@ -22,7 +22,7 @@
 
     <!-- Hero Section -->
     <section class="flex flex-col items-center justify-center min-h-screen text-black text-center">
-        <img src="{{ asset('images/background.jpg') }}" class="w-full h-96 object-cover rounded-xl shadow-lg mb-6">
+        <img src="{{ asset('images/background.png') }}" class="w-full h-96 object-cover rounded-xl shadow-lg mb-6">
         <h2 class="text-4xl font-bold mb-4">Welcome to Artship </h2>
         <p class="max-w-xl text-lg">The Ship will take you through your Art Journey. Become the Captain!</p>
     </section>
