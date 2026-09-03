@@ -32,13 +32,22 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
+        $emailLookup = app(\App\Services\EncryptionHelper::class)->lookupHash($request->email);
+
+        if (User::where('email_lookup', $emailLookup)->exists()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => 'The email has already been taken.',
+            ]);
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'email_lookup' => $emailLookup,
             'password' => Hash::make($request->password),
         ]);
 

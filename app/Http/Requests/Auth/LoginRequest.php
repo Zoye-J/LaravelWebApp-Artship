@@ -41,7 +41,9 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $emailLookup = app(\App\Services\EncryptionHelper::class)->lookupHash($this->input('email'));
+
+        if (! Auth::attempt(['email_lookup' => $emailLookup, 'password' => $this->input('password')], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

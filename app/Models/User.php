@@ -29,12 +29,12 @@ class User extends Authenticatable
     protected $macProtected = ['name', 'email'];
 
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',
-    ];
-
+    'name',
+    'email',
+    'email_lookup',   // add this
+    'password',
+    'role',
+];
     /**
      * The attributes that should be hidden for serialization.
      *
