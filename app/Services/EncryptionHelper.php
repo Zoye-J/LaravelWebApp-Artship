@@ -2,99 +2,120 @@
 
 namespace App\Services;
 
-/**
- * ENCRYPTION HELPER - Person 3's Service
- * 
- * NOTE: This service uses placeholder implementations.
- * Person 1 will replace these with actual RSA/ECC implementations.
- * 
- * @person1 Implement RSAEncryptionService and ECCEncryptionService
- * @person1 Then update these methods to use those services
- */
+use App\Models\Key;
+
+
 class EncryptionHelper
 {
-    /**
-     * Encrypt data using asymmetric encryption
-     * 
-     * TODO FOR PERSON 1:
-     * - Replace this with actual RSA or ECC encryption
-     * - Use RSA for user data, ECC for other data
-     * - Example: $encrypted = RSAEncryptionService::encrypt($data, $publicKey);
-     * 
-     * @param string $data
-     * @return string Encrypted data (base64 encoded)
-     */
+    private const FIELD_PURPOSE = 'field-encryption';
+    private const SIGNING_PURPOSE = 'signing';
+
+    private RSAEncryptionService $rsa;
+    private ECCEncryptionService $ecc;
+
+    public function __construct(?RSAEncryptionService $rsa = null, ?ECCEncryptionService $ecc = null)
+    {
+        $this->rsa = $rsa ?? app(RSAEncryptionService::class);
+        $this->ecc = $ecc ?? app(ECCEncryptionService::class);
+    }
+
+    
     public function encrypt(string $data): string
     {
-        // ============================================
-        // PLACEHOLDER - Person 1 will implement this
-        // ============================================
-        
-        // Temporary: Simple reversible encoding (NOT SECURE - just for testing)
-        // Person 1: Replace with actual RSA/ECC encryption
-        return base64_encode($data);
+        $key = $this->activeKeyOrFail('ecc', self::FIELD_PURPOSE);
+
+        $ciphertext = $this->ecc->encrypt($data, $key->public_key);
+
+        return $this->wrapEnvelope('ecc', $key->id, $ciphertext);
     }
 
-    /**
-     * Decrypt data using asymmetric encryption
-     * 
-     * TODO FOR PERSON 1:
-     * - Replace this with actual RSA or ECC decryption
-     * - Use RSA for user data, ECC for other data
-     * - Example: $decrypted = RSAEncryptionService::decrypt($encrypted, $privateKey);
-     * 
-     * @param string $encryptedData Base64 encoded encrypted data
-     * @return string Decrypted data
-     */
+    
     public function decrypt(string $encryptedData): string
     {
-        // ============================================
-        // PLACEHOLDER - Person 1 will implement this
-        // ============================================
-        
-        // Temporary: Reversible encoding (NOT SECURE - just for testing)
-        // Person 1: Replace with actual RSA/ECC decryption
-        return base64_decode($encryptedData);
+        $envelope = $this->unwrapEnvelope($encryptedData);
+
+        $key = Key::find($envelope['key_id']);
+        if (!$key) {
+            throw new \RuntimeException("Cannot decrypt: key id {$envelope['key_id']} no longer exists.");
+        }
+
+        return match ($envelope['alg']) {
+            'rsa' => $this->rsa->decrypt($envelope['ct'], $key->private_key),
+            'ecc' => $this->ecc->decrypt($envelope['ct'], $key->private_key),
+            default => throw new \RuntimeException("Unknown algorithm '{$envelope['alg']}' in encryption envelope."),
+        };
     }
 
-    /**
-     * Get user's public key for encryption
-     * 
-     * TODO FOR PERSON 1:
-     * - Implement proper key retrieval from Key model
-     * - Use active keys only
-     * 
-     * @param int $userId
-     * @return string Public key
-     */
+    
+    public function sign(string $data): string
+    {
+        $key = $this->activeKeyOrFail('rsa', self::SIGNING_PURPOSE);
+
+        return $this->wrapEnvelope('rsa', $key->id, $this->rsa->sign($data, $key->private_key));
+    }
+
+    public function verifySignature(string $data, string $signatureEnvelope): bool
+    {
+        try {
+            $envelope = $this->unwrapEnvelope($signatureEnvelope);
+        } catch (\RuntimeException) {
+            return false;
+        }
+
+        if ($envelope['alg'] !== 'rsa') {
+            return false;
+        }
+
+        $key = Key::find($envelope['key_id']);
+        if (!$key) {
+            return false;
+        }
+
+        return $this->rsa->verify($data, $envelope['ct'], $key->public_key);
+    }
+
+    
     public function getUserPublicKey(int $userId): string
     {
-        // ============================================
-        // PLACEHOLDER - Person 1 will implement this
-        // ============================================
-        
-        // Temporary placeholder key
-        return 'PLACEHOLDER_PUBLIC_KEY_' . $userId;
+        return $this->activeKeyOrFail('ecc', self::FIELD_PURPOSE)->public_key;
     }
 
-    /**
-     * Get user's private key for decryption
-     * 
-     * TODO FOR PERSON 1:
-     * - Implement proper key retrieval with password
-     * - Private keys should be encrypted with user's password
-     * 
-     * @param int $userId
-     * @param string $password User's password for decrypting private key
-     * @return string Private key
-     */
     public function getUserPrivateKey(int $userId, string $password): string
     {
-        // ============================================
-        // PLACEHOLDER - Person 1 will implement this
-        // ============================================
-        
-        // Temporary placeholder key
-        return 'PLACEHOLDER_PRIVATE_KEY_' . $userId;
+        return $this->activeKeyOrFail('ecc', self::FIELD_PURPOSE)->private_key;
+    }
+
+    private function activeKeyOrFail(string $algorithm, string $purpose): Key
+    {
+        $key = Key::forPurpose($algorithm, $purpose)->active()->first();
+
+        if (!$key) {
+            throw new \RuntimeException(
+                "No active {$algorithm} key for purpose '{$purpose}'. Run: " .
+                "php artisan keys:generate {$algorithm} --purpose={$purpose}"
+            );
+        }
+
+        return $key;
+    }
+
+    private function wrapEnvelope(string $alg, int $keyId, string $ciphertext): string
+    {
+        return base64_encode(json_encode([
+            'alg' => $alg,
+            'key_id' => $keyId,
+            'ct' => $ciphertext,
+        ]));
+    }
+
+    private function unwrapEnvelope(string $encoded): array
+    {
+        $decoded = json_decode(base64_decode($encoded, true) ?: '', true);
+
+        if (!is_array($decoded) || !isset($decoded['alg'], $decoded['key_id'], $decoded['ct'])) {
+            throw new \RuntimeException('Malformed encryption envelope — cannot decrypt.');
+        }
+
+        return $decoded;
     }
 }
