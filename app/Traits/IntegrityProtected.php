@@ -70,7 +70,7 @@ trait IntegrityProtected
                 continue;
             }
 
-            $currentValue = $this->{$field} ?? '';
+            $currentValue = $this->getRawOriginal($field) ?? '';
             $storedMac = $this->{$macField};
             
             // Verify MAC
