@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MyCourseController;
 use App\Http\Controllers\ArtworkController;
 use App\Http\Controllers\CourseRatingController;
-
+use App\Http\Controllers\KeyManagementController;
 
 // Public routes
 Route::get('/', function () {
@@ -116,3 +116,12 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
+Route::middleware(['auth', 'admin'])->prefix('admin/keys')->name('admin.keys.')->group(function () {
+    Route::get('/', [KeyManagementController::class, 'index'])->name('index');
+    Route::get('/create', [KeyManagementController::class, 'create'])->name('create');
+    Route::post('/', [KeyManagementController::class, 'store'])->name('store');
+    Route::get('/{key}', [KeyManagementController::class, 'show'])->name('show');
+    Route::post('/{key}/rotate', [KeyManagementController::class, 'rotate'])->name('rotate');
+    Route::get('/{key}/export', [KeyManagementController::class, 'exportPublicKey'])->name('export');
+    Route::post('/{key}/revoke', [KeyManagementController::class, 'revoke'])->name('revoke');
+});
