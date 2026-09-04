@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Services\CustomHashService;
+
 
 class LoginRequest extends FormRequest
 {
@@ -42,15 +44,26 @@ class LoginRequest extends FormRequest
         $this->ensureIsNotRateLimited();
 
         $emailLookup = app(\App\Services\EncryptionHelper::class)->lookupHash($this->input('email'));
-
-        if (! Auth::attempt(['email_lookup' => $emailLookup, 'password' => $this->input('password')], $this->boolean('remember'))) {
+        
+        $user = \App\Models\User::where('email_lookup', $emailLookup)->first();
+        
+        if (!$user) {
             RateLimiter::hit($this->throttleKey());
-
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
+        }
+        
+        // Verify password with custom hash
+        if (!app(CustomHashService::class)->check($this->input('password'), $user->password)) {
+            RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
 
+        // Authenticate user
+        Auth::login($user, $this->boolean('remember'));
         RateLimiter::clear($this->throttleKey());
     }
 

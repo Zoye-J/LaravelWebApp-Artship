@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Services\CustomHashService;
 
 class User extends Authenticatable
 {
@@ -68,16 +69,20 @@ class User extends Authenticatable
      * @param string $password
      * @return void
      */
+    // Replace the setPasswordAttribute method
     public function setPasswordAttribute($password)
     {
         // ============================================
-        // PERSON 2: Implement custom password hashing here
-        // Replace Hash::make() with your implementation
-        // Example: $this->attributes['password'] = CustomHash::make($password);
+        // PERSON 2: Custom password hashing from scratch
         // ============================================
-        $this->attributes['password'] = \Hash::make($password);
+        $this->attributes['password'] = app(CustomHashService::class)->make($password);
     }
 
+    // Add method for password verification
+    public function verifyPassword(string $password): bool
+    {
+        return app(CustomHashService::class)->check($password, $this->password);
+    }
     // Relationships
     public function wishlist()
     {

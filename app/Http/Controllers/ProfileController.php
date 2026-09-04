@@ -41,9 +41,13 @@ class ProfileController extends Controller
     }
 
     // Optional: Show-only page (if you still want /profile/show route)
-    public function show()
+    public function show(Request $request)
     {
-        return view('profile.show', ['user' => Auth::user()]);
+        $user = $request->user();
+        $twoFactor = \App\Models\TwoFactorAuth::where('user_id', $user->id)->first();
+        $twoFactorEnabled = $twoFactor && $twoFactor->enabled;
+        
+        return view('profile.show', compact('user', 'twoFactorEnabled'));
     }
 
     // Delete account

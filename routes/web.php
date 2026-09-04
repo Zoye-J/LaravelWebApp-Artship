@@ -79,7 +79,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 
 // AUTHENTICATED USER ROUTES (all logged-in users)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth','2fa'])->group(function () {
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile/show', [ProfileController::class, 'show'])->name('profile.show');
@@ -125,3 +125,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin/keys')->name('admin.keys.')-
     Route::get('/{key}/export', [KeyManagementController::class, 'exportPublicKey'])->name('export');
     Route::post('/{key}/revoke', [KeyManagementController::class, 'revoke'])->name('revoke');
 });
+
+// 2FA routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/2fa/setup', [\App\Http\Controllers\TwoFactorController::class, 'setup'])->name('2fa.setup');
+    Route::post('/2fa/enable', [\App\Http\Controllers\TwoFactorController::class, 'enable'])->name('2fa.enable');
+    Route::post('/2fa/disable', [\App\Http\Controllers\TwoFactorController::class, 'disable'])->name('2fa.disable');
+});
+
+Route::get('/2fa/verify', [\App\Http\Controllers\TwoFactorController::class, 'showVerify'])->name('2fa.verify');
+Route::post('/2fa/verify', [\App\Http\Controllers\TwoFactorController::class, 'verify'])->name('2fa.verify.post');
