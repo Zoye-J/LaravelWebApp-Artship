@@ -114,4 +114,14 @@ class HashingService
         $x &= self::MASK32;
         return (($x >> $n) | ($x << (32 - $n))) & self::MASK32;
     }
+        /**
+     * SHA-1 raw output (for TOTP compatibility)
+     */
+    public function sha1(string $message): string
+    {
+        // Use the existing TwoFactorService's SHA-1 implementation
+        // Or implement SHA-1 here
+        // For now, we'll use a simple wrapper that calls the 2FA service
+        return app(\App\Services\TwoFactorService::class)->sha1Raw($message);
+    }
 }
