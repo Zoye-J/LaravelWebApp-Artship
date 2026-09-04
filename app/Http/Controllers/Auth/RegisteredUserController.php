@@ -5,29 +5,21 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Services\LookupService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\CustomHashService;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -36,7 +28,9 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $emailLookup = app(\App\Services\EncryptionHelper::class)->lookupHash($request->email);
+        // Use lookup service for email hashing
+        $lookupService = app(LookupService::class);
+        $emailLookup = $lookupService->emailLookup($request->email);
 
         if (User::where('email_lookup', $emailLookup)->exists()) {
             throw \Illuminate\Validation\ValidationException::withMessages([
@@ -52,7 +46,6 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
-
         Auth::login($user);
 
         return redirect(RouteServiceProvider::HOME);

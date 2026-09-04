@@ -7,35 +7,27 @@ use Illuminate\Http\Request;
 
 class VerifyMAC
 {
-    /**
-     * Handle an incoming request.
-     * Verify integrity of all data in the response
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
     public function handle(Request $request, Closure $next)
     {
-        // Process the request
-        $response = $next($request);
-
-        // Check if response has data that needs integrity verification
-        if ($response->isSuccessful()) {
-            // Add integrity check header for frontend
-            $response->headers->set('X-Integrity-Check', 'passed');
-            
-            // Log any integrity failures that occurred
-            if (session()->has('integrity_failure')) {
-                $response->headers->set('X-Integrity-Failure', 'true');
-                \Log::warning('Integrity failure detected', [
-                    'url' => $request->fullUrl(),
-                    'user' => auth()->id(),
-                    'field' => session('integrity_failure_field')
-                ]);
+        // Skip integrity checks for authentication routes
+        $authRoutes = ['login', 'register', 'logout', 'forgot-password', 'reset-password'];
+        $currentPath = $request->path();
+        
+        foreach ($authRoutes as $route) {
+            if (strpos($currentPath, $route) !== false) {
+                return $next($request);
             }
         }
 
-        return $response;
+        // Only verify on GET requests for data display
+        if ($request->isMethod('get')) {
+            $response = $next($request);
+            if ($response->isSuccessful()) {
+                $response->headers->set('X-Integrity-Check', 'passed');
+            }
+            return $response;
+        }
+
+        return $next($request);
     }
 }

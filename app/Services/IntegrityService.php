@@ -2,20 +2,28 @@
 
 namespace App\Services;
 
-
 class IntegrityService
 {
     private MACService $mac;
+    private array $macCache = [];
 
     public function __construct(?MACService $mac = null)
     {
-        
         $this->mac = $mac ?? app(MACService::class);
     }
 
     public function generateMac(string $data): string
     {
-        return $this->mac->generate($data, $this->getMacKey());
+        // Cache frequently accessed data
+        $cacheKey = md5($data);
+        if (isset($this->macCache[$cacheKey])) {
+            return $this->macCache[$cacheKey];
+        }
+        
+        $result = $this->mac->generate($data, $this->getMacKey());
+        $this->macCache[$cacheKey] = $result;
+        
+        return $result;
     }
 
     public function verifyMac(string $data, string $mac): bool
@@ -23,7 +31,7 @@ class IntegrityService
         return $this->mac->verify($data, $this->getMacKey(), $mac);
     }
 
-        public function getMacKey(): string
+    public function getMacKey(): string
     {
         $key = env('MAC_SECRET_KEY');
 
@@ -35,5 +43,13 @@ class IntegrityService
         }
 
         return $key;
+    }
+
+    /**
+     * Clear cache
+     */
+    public function clearCache(): void
+    {
+        $this->macCache = [];
     }
 }
