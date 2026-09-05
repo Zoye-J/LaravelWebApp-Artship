@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\EncryptableFields;
 
 class TwoFactorAuth extends Model
 {
-    use HasFactory;
+
+    use HasFactory, EncryptableFields;
+    protected $encryptable = ['secret', 'backup_codes'];
 
     protected $table = 'two_factor_auths';
 

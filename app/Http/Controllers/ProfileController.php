@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Hash;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,7 +28,7 @@ class ProfileController extends Controller
         $user->name = $request->name;
 
         if ($request->filled('password')) {
-            if (!Hash::check($request->current_password, $user->password)) {
+            if (!$user->verifyPassword($request->current_password)) {
                 return back()->withErrors(['current_password' => 'Current password is incorrect.']);
             }
 

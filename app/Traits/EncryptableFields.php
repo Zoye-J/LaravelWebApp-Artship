@@ -45,12 +45,11 @@ trait EncryptableFields
             if (!empty($this->{$field})) {
                 // Store original in temporary attribute for MAC generation
                 $originalValue = $this->{$field};
-                
+            
                 // Encrypt the field
                 $this->{$field} = $helper->encrypt($originalValue);
                 
-                // Store original for MAC generation if needed
-                $this->{$field . '_original'} = $originalValue;
+
             }
         }
     }

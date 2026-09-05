@@ -10,7 +10,7 @@ namespace App\Services;
  */
 class CustomHashService
 {
-    private const ITERATIONS = 100000;
+    private const ITERATIONS =3000;
     private const SALT_LENGTH = 32;
     private const HASH_LENGTH = 32;
     private const ALGORITHM = 'sha256';

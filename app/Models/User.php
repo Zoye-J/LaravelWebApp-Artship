@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Traits\EncryptableFields;
-//use App\Traits\IntegrityProtected;
+use App\Traits\IntegrityProtected;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,11 +14,11 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    //use EncryptableFields, IntegrityProtected;
+    use EncryptableFields, IntegrityProtected;
 
     protected $encryptable = ['name', 'email'];
 
-    //protected $macProtected = ['name', 'email'];
+    protected $macProtected = ['name', 'email'];
 
     protected $fillable = [
     'name',

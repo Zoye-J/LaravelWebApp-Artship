@@ -8,20 +8,12 @@ class LookupService
 
     public function emailLookup(string $email): string
     {
-        // Check cache
         if (isset(self::$cache[$email])) {
             return self::$cache[$email];
         }
-        
-        // Use a simpler but still "from scratch" approach
-        // This is just for lookups, not security-critical
         $pepper = env('EMAIL_LOOKUP_PEPPER', 'default_pepper');
-        $data = $email . $pepper;
-        
-        // Simple hash for lookups - from scratch
-        $hash = $this->simpleHash($data);
+        $hash = app(HashingService::class)->sha256($email . $pepper);
         self::$cache[$email] = $hash;
-        
         return $hash;
     }
 

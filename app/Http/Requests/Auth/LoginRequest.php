@@ -31,15 +31,14 @@ class LoginRequest extends FormRequest
 
         $lookupService = app(LookupService::class);
         $emailLookup = $lookupService->emailLookup($this->input('email'));
+        $user = \App\Models\User::where('email_lookup', $emailLookup)->first();
 
-        if (!Auth::attempt(['email_lookup' => $emailLookup, 'password' => $this->input('password')], $this->boolean('remember'))) {
+        if (!$user || !$user->verifyPassword($this->input('password'))) {
             RateLimiter::hit($this->throttleKey());
-            
-            throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
+            throw ValidationException::withMessages(['email' => trans('auth.failed')]);
         }
 
+        Auth::login($user, $this->boolean('remember'));
         RateLimiter::clear($this->throttleKey());
     }
 

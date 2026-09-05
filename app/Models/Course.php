@@ -68,16 +68,6 @@ class Course extends Model
         return $this->ratings()->count();
     }
 
-    // ============================================
-    // PERSON 3: Override save to handle encryption
-    // ============================================
-    public function save(array $options = [])
-    {
-        // Encrypt before saving
-        $this->encryptFields();
-        parent::save($options);
-        // Generate MAC after saving with encrypted values
-        $this->generateMac();
-        parent::save($options);
-    }
+
+
 }
