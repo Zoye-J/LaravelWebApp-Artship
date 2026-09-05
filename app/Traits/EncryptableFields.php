@@ -78,12 +78,13 @@ trait EncryptableFields
         }
     }
 
-    /**
+   /**
      * Get original encrypted value (for MAC verification)
      */
     public function getEncryptedValue(string $field): ?string
     {
-        $encryptedField = $field;
-        return $this->attributes[$encryptedField] ?? null;
+        // IMPORTANT: Return the raw attribute value from database
+        // NOT the decrypted value
+        return $this->getOriginal($field) ?? $this->attributes[$field] ?? null;
     }
 }

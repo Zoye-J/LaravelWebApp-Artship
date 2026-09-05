@@ -43,19 +43,17 @@ trait IntegrityProtected
         $service = new IntegrityService();
 
         foreach ($fields as $field) {
-            $value = $this->{$field} ?? '';
+            // Get the raw encrypted value from database
+            $valueToMac = $this->getOriginal($field) ?? $this->attributes[$field] ?? '';
             $macField = $field . '_mac';
             
-            // Generate MAC using the encrypted value if available
-            $valueToMac = $this->getEncryptedValue($field) ?? $value;
+            // Generate MAC using the encrypted value
             $this->{$macField} = $service->generateMac($valueToMac);
         }
     }
 
     /**
      * Verify MAC for all protected fields
-     * 
-     * @throws \Exception
      */
     public function verifyMac(): void
     {
@@ -70,10 +68,11 @@ trait IntegrityProtected
                 continue;
             }
 
-            $currentValue = $this->getRawOriginal($field) ?? '';
+            // Get the raw encrypted value
+            $currentValue = $this->getOriginal($field) ?? $this->attributes[$field] ?? '';
             $storedMac = $this->{$macField};
             
-            // Verify MAC
+            // Verify MAC against encrypted value
             if (!$service->verifyMac($currentValue, $storedMac)) {
                 $error = sprintf(
                     'Integrity check failed for %s::%s (ID: %s) - Data may have been tampered with',
@@ -84,18 +83,15 @@ trait IntegrityProtected
                 
                 \Log::error($error);
                 
-                // Set a flag so controllers can handle it
                 $this->integrity_failed = true;
                 $this->failed_field = $field;
                 
-                // Throw exception if strict mode is enabled
                 if (config('app.debug', false)) {
                     throw new \Exception($error);
                 }
             }
         }
     }
-
     /**
      * Check if integrity check failed
      */
