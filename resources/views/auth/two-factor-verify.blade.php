@@ -1,4 +1,23 @@
 <x-guest-layout>
+    @if($isFirstTime ?? false)
+        <div class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h3 class="text-lg font-medium text-yellow-800 mb-2">🔐 First Time Setup Required</h3>
+            <p class="text-sm text-yellow-700 mb-2">
+                Please scan the QR code below with your authenticator app (Google Authenticator, Authy, etc.)
+            </p>
+            <div class="bg-white p-4 rounded-lg inline-block">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode('otpauth://totp/Artship:' . ($user->email ?? 'user') . '?secret=' . $secret . '&issuer=Artship') }}" 
+                     alt="QR Code">
+            </div>
+            <p class="text-xs text-gray-600 mt-2">
+                Secret: <strong class="font-mono">{{ $secret }}</strong>
+            </p>
+            <p class="text-sm text-yellow-700 mt-2">
+                After scanning, enter the 6-digit code from your app below.
+            </p>
+        </div>
+    @endif
+
     <div class="mb-4 text-sm text-gray-600">
         {{ __('Please enter your two-factor authentication code to continue.') }}
     </div>
@@ -27,7 +46,7 @@
             <x-input-error :messages="$errors->get('code')" class="mt-2" />
         </div>
 
-        <div class="mt-4">
+        <div class="mt-4 flex items-center justify-between">
             <button type="submit" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
                 Verify
             </button>

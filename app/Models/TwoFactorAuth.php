@@ -8,8 +8,8 @@ use App\Traits\EncryptableFields;
 
 class TwoFactorAuth extends Model
 {
-
     use HasFactory, EncryptableFields;
+
     protected $encryptable = ['secret', 'backup_codes'];
 
     protected $table = 'two_factor_auths';
@@ -20,11 +20,14 @@ class TwoFactorAuth extends Model
         'enabled',
         'backup_codes',
         'last_verified_at',
+        'first_verified_at',
+
     ];
 
     protected $casts = [
         'enabled' => 'boolean',
         'last_verified_at' => 'datetime',
+        'first_verified_at' => 'datetime',
     ];
 
     public function user()

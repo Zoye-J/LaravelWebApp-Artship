@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
-use App\Services\LookupService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,10 +27,10 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Use lookup service for email hashing
-        $lookupService = app(LookupService::class);
-        $emailLookup = $lookupService->emailLookup($request->email);
+        // Generate email lookup hash
+        $emailLookup = app(\App\Services\LookupService::class)->emailLookup($request->email);
 
+        // Check if email already exists
         if (User::where('email_lookup', $emailLookup)->exists()) {
             throw \Illuminate\Validation\ValidationException::withMessages([
                 'email' => 'The email has already been taken.',
@@ -46,6 +45,7 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
+
         Auth::login($user);
 
         return redirect(RouteServiceProvider::HOME);

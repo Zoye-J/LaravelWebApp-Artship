@@ -19,16 +19,7 @@ class EncryptionHelper
         $this->ecc = $ecc ?? app(ECCEncryptionService::class);
     }
 
-    public function lookupHash(string $email): string
-    {
-        // Use a simpler, faster approach for lookups
-        // A single SHA-256 pass is sufficient for lookup indexing
-        $pepper = env('EMAIL_LOOKUP_PEPPER', 'default_pepper_change_me');
-        
-        // Use PHP's built-in hash for SPEED - this is NOT for security,
-        // it's just for database indexing/lookup
-        return hash('sha256', $email . $pepper);
-    }
+    
 
     public function encrypt(string $data): string
     {
