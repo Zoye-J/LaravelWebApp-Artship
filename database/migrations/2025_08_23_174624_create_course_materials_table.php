@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('course_materials', function (Blueprint $table) {
             $table->id();
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
-            $table->string('title');
+            $table->text('title');
             $table->enum('type', ['video', 'pdf']);
-            $table->string('file_path'); // storage path
+            $table->text('file_path'); // storage path
             $table->timestamps();
         });
     }
