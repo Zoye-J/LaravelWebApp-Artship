@@ -113,7 +113,11 @@ Route::middleware(['auth','2fa'])->group(function () {
     Route::get('/courses/{course}/artwork/create', [ArtworkController::class, 'create'])->name('artwork.create');
     Route::post('/courses/{course}/artwork', [ArtworkController::class, 'store'])->name('artwork.store');
     Route::post('/artwork/{artwork}/like', [ArtworkController::class, 'toggleLike'])->name('artwork.like');
-});
+    Route::get('/my-artwork', [ArtworkController::class, 'myArtwork'])->name('artwork.my');
+    Route::get('/artwork/{artwork}/edit', [ArtworkController::class, 'edit'])->name('artwork.edit');
+    Route::put('/artwork/{artwork}', [ArtworkController::class, 'update'])->name('artwork.update');
+    Route::delete('/artwork/{artwork}', [ArtworkController::class, 'destroy'])->name('artwork.destroy');
+    });
 
 
 Route::middleware(['auth', 'admin'])->prefix('admin/keys')->name('admin.keys.')->group(function () {

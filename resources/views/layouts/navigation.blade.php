@@ -18,6 +18,10 @@
                     <x-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')" class="text-brown-800 hover:text-amber-100 font-semibold">
                         {{ __('Courses') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('artwork.my')" :active="request()->routeIs('artwork.my')" class="text-brown-800 hover:text-amber-100 font-semibold">
+                        {{ __('My Artwork') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -93,6 +97,10 @@
 
             <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')" class="text-orange-600 hover:bg-orange-50">
                 {{ __('Courses') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('artwork.my')" :active="request()->routeIs('artwork.my')" class="text-orange-600 hover:bg-orange-50">
+                {{ __('My Artwork') }}
             </x-responsive-nav-link>
         </div>
 

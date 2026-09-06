@@ -59,6 +59,67 @@ class ArtworkController extends Controller
             ->with('success', 'Artwork submitted successfully! It will be reviewed by admins.');
     }
 
+    public function myArtwork()
+        {
+            $submissions = ArtworkSubmission::with('course')
+                ->where('user_id', auth()->id())
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return view('artwork.my', compact('submissions'));
+        }
+
+        public function edit(ArtworkSubmission $artwork)
+        {
+            if ($artwork->user_id !== auth()->id()) {
+                abort(403);
+            }
+
+            return view('artwork.edit', compact('artwork'));
+        }
+
+        public function update(Request $request, ArtworkSubmission $artwork)
+        {
+            if ($artwork->user_id !== auth()->id()) {
+                abort(403);
+            }
+
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ]);
+
+            $artwork->title = $request->title;
+            $artwork->description = $request->description;
+
+            if ($request->hasFile('image')) {
+                // $artwork->image_path is already plaintext here (decrypted on retrieval)
+                Storage::disk('public')->delete($artwork->image_path);
+                $artwork->image_path = $request->file('image')->store('artwork_submissions', 'public');
+            }
+
+            $artwork->save();
+
+            if ($artwork->hasIntegrityFailed()) {
+                return back()->with('error', 'Data integrity check failed. Please try again.');
+            }
+
+            return redirect()->route('artwork.my')->with('success', 'Artwork updated successfully!');
+        }
+
+        public function destroy(ArtworkSubmission $artwork)
+        {
+            if ($artwork->user_id !== auth()->id()) {
+                abort(403);
+            }
+
+            Storage::disk('public')->delete($artwork->image_path);
+            $artwork->delete();
+
+            return redirect()->route('artwork.my')->with('success', 'Artwork deleted.');
+    }
+    
     public function markAsViewed(ArtworkSubmission $artwork)
     {
         $artwork->update(['viewed_at' => now()]);
