@@ -35,6 +35,7 @@ trait EncryptableFields
 
     /**
      * Encrypt all encryptable fields
+     * Stores encrypted values in the model's attributes
      */
     public function encryptFields(): void
     {
@@ -42,20 +43,17 @@ trait EncryptableFields
         $helper = new EncryptionHelper();
 
         foreach ($fields as $field) {
-            if (!empty($this->{$field})) {
-                // Store original in temporary attribute for MAC generation
-                $originalValue = $this->{$field};
-            
-                // Encrypt the field
-                $this->{$field} = $helper->encrypt($originalValue);
-                
-
+            if (!empty($this->attributes[$field])) {
+                // Encrypt the field and store in attributes
+                $plaintext = $this->attributes[$field];
+                $this->attributes[$field] = $helper->encrypt($plaintext);
             }
         }
     }
 
     /**
      * Decrypt all encryptable fields
+     * Decrypts values when retrieving from database
      */
     public function decryptFields(): void
     {
@@ -63,28 +61,41 @@ trait EncryptableFields
         $helper = new EncryptionHelper();
 
         foreach ($fields as $field) {
-            if (!empty($this->{$field})) {
+            if (!empty($this->attributes[$field])) {
                 try {
-                    $this->{$field} = $helper->decrypt($this->{$field});
+                    $encrypted = $this->attributes[$field];
+                    $this->attributes[$field] = $helper->decrypt($encrypted);
                 } catch (\Exception $e) {
-                    // Log decryption error but don't crash
                     \Log::error('Decryption failed for ' . get_class($this) . '::' . $field, [
                         'id' => $this->id ?? null,
                         'error' => $e->getMessage()
                     ]);
-                    $this->{$field} = '[DECRYPTION FAILED]';
+                    $this->attributes[$field] = '[DECRYPTION FAILED]';
                 }
             }
         }
     }
 
-   /**
-     * Get original encrypted value (for MAC verification)
+    /**
+     * Get the raw encrypted value of a field
+     * Used for MAC verification
      */
     public function getEncryptedValue(string $field): ?string
     {
-        // IMPORTANT: Return the raw attribute value from database
-        // NOT the decrypted value
-        return $this->getOriginal($field) ?? $this->attributes[$field] ?? null;
+        // First check if we have the original encrypted value
+        if (isset($this->original[$field])) {
+            return $this->original[$field];
+        }
+        
+        // Otherwise check attributes
+        return $this->attributes[$field] ?? null;
+    }
+
+    /**
+     * Check if a field is encryptable (PUBLIC method for views)
+     */
+    public function isFieldEncryptable(string $field): bool
+    {
+        return in_array($field, $this->getEncryptableFields());
     }
 }

@@ -49,8 +49,10 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        // Update name - will be auto-encrypted by trait
+        // Set the new name - will be encrypted by trait
         $user->name = $request->name;
+        
+        // Save - this triggers encryptFields() and generateMac()
         $user->save();
 
         // Check if integrity check passed
@@ -58,7 +60,7 @@ class ProfileController extends Controller
             return back()->with('error', 'Profile update failed due to integrity check. Please try again.');
         }
 
-        return back()->with('status', 'profile-updated');
+        return redirect()->route('profile.show')->with('status', 'profile-updated');
     }
 
     /**
@@ -84,7 +86,7 @@ class ProfileController extends Controller
         $user->password = $request->password;
         $user->save();
 
-        return back()->with('status', 'password-updated');
+        return redirect()->route('profile.show')->with('status', 'password-updated');
     }
 
     /**

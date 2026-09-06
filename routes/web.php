@@ -19,7 +19,6 @@ Route::get('/', function () {
 // Authentication routes
 require __DIR__.'/auth.php';
 
-Route::put('/profile/password', [ProfileController::class, 'password'])->name('profile.password');
 
 Route::get('/dashboard', function () {
     try {

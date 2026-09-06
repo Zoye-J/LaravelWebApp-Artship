@@ -36,6 +36,7 @@ trait IntegrityProtected
 
     /**
      * Generate MAC for protected fields
+     * Uses the raw encrypted value from the model's attributes
      */
     public function generateMac(): void
     {
@@ -43,17 +44,24 @@ trait IntegrityProtected
         $service = new IntegrityService();
 
         foreach ($fields as $field) {
-            // Get the raw encrypted value from database
-            $valueToMac = $this->getOriginal($field) ?? $this->attributes[$field] ?? '';
+            // Get the raw value from attributes (this is the encrypted value)
+            $valueToMac = $this->attributes[$field] ?? '';
+            
+            // Skip if empty
+            if (empty($valueToMac)) {
+                continue;
+            }
+            
             $macField = $field . '_mac';
             
             // Generate MAC using the encrypted value
-            $this->{$macField} = $service->generateMac($valueToMac);
+            $this->attributes[$macField] = $service->generateMac($valueToMac);
         }
     }
 
     /**
      * Verify MAC for all protected fields
+     * Verifies the MAC against the stored encrypted value
      */
     public function verifyMac(): void
     {
@@ -64,16 +72,21 @@ trait IntegrityProtected
             $macField = $field . '_mac';
             
             // Skip if no MAC stored
-            if (empty($this->{$macField})) {
+            if (empty($this->attributes[$macField] ?? null)) {
                 continue;
             }
 
-            // Get the raw encrypted value
-            $currentValue = $this->getOriginal($field) ?? $this->attributes[$field] ?? '';
-            $storedMac = $this->{$macField};
+            // Get the stored encrypted value from attributes
+            $encryptedValue = $this->getRawOriginal($field) ?? '';
+            $storedMac = $this->attributes[$macField] ?? '';
+            
+            // Skip if no encrypted value
+            if (empty($encryptedValue)) {
+                continue;
+            }
             
             // Verify MAC against encrypted value
-            if (!$service->verifyMac($currentValue, $storedMac)) {
+            if (!$service->verifyMac($encryptedValue, $storedMac)) {
                 $error = sprintf(
                     'Integrity check failed for %s::%s (ID: %s) - Data may have been tampered with',
                     get_class($this),
@@ -92,6 +105,7 @@ trait IntegrityProtected
             }
         }
     }
+
     /**
      * Check if integrity check failed
      */

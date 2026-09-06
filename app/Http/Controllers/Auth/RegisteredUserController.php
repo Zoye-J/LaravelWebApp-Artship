@@ -46,8 +46,6 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(RouteServiceProvider::HOME);
+        return redirect()->route('2fa.setup')->with('info', 'Welcome! Please set up two-factor authentication to continue.');
     }
 }
