@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MyCourseController;
 use App\Http\Controllers\ArtworkController;
 use App\Http\Controllers\CourseRatingController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\KeyManagementController;
 
 // Public routes
@@ -75,11 +76,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
     ->name('feedback.mark-viewed');
     Route::post('/feedback/mark-all-viewed', [CourseRatingController::class, 'markAllViewed'])
     ->name('feedback.mark-all-viewed');
+
+    Route::get('/users', [AdminUserController::class, 'index'])->name('admin.users.index');
+    Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('admin.users.role');
 });
 
 
 // AUTHENTICATED USER ROUTES (all logged-in users)
-Route::middleware(['auth','2fa'])->group(function () {
+Route::middleware(['auth','2fa','session.security'])->group(function () {
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile/show', [ProfileController::class, 'show'])->name('profile.show');
