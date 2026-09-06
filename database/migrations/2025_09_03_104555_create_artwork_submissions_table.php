@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
-            $table->string('title');
+            $table->text('title');
             $table->text('description')->nullable();
-            $table->string('image_path');
+            $table->text('image_path');
             $table->boolean('is_featured')->default(false);
             $table->integer('likes_count')->default(0);
             $table->timestamps();
