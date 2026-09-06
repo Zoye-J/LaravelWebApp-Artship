@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->text('title');
             $table->text('description')->nullable();
-            $table->string('category'); // e.g. "Digital Painting", "Anatomy", "Pen"
+            $table->text('category');
             $table->string('image')->nullable(); // optional image
             $table->timestamps();
         });
