@@ -85,6 +85,7 @@ Route::middleware(['auth','2fa'])->group(function () {
     Route::get('/profile/show', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Course routes - accessible to all authenticated users
     Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
