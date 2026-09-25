@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
-    /**
-     * Show the user's profile (read-only view)
-     */
+   
     public function show(Request $request)
     {
         $user = $request->user();
@@ -23,9 +21,7 @@ class ProfileController extends Controller
         return view('profile.show', compact('user', 'twoFactorEnabled'));
     }
 
-    /**
-     * Show the profile edit form
-     */
+
     public function edit(Request $request)
     {
         $user = $request->user();
@@ -37,10 +33,7 @@ class ProfileController extends Controller
         return view('profile.edit', compact('user', 'twoFactorEnabled'));
     }
 
-    /**
-     * Update the user's profile information
-     * Name is auto-encrypted via EncryptableFields trait
-     */
+   
     public function update(Request $request)
     {
         $user = $request->user();
@@ -49,10 +42,10 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        // Set the new name - will be encrypted by trait
+       
         $user->name = $request->name;
         
-        // Save - this triggers encryptFields() and generateMac()
+   
         $user->save();
 
         // Check if integrity check passed

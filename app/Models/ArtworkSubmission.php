@@ -11,19 +11,10 @@ class ArtworkSubmission extends Model
 {
     use HasFactory;
     
-    // ============================================
-    // PERSON 3: Added encryption traits
-    // ============================================
+  
     use EncryptableFields, IntegrityProtected;
 
-    /**
-     * PERSON 3: Define which fields need encryption
-     */
     protected $encryptable = ['title', 'description', 'image_path'];
-    
-    /**
-     * PERSON 3: Define which fields need MAC verification
-     */
     protected $macProtected = ['title', 'description'];
 
     protected $fillable = [

@@ -6,10 +6,9 @@ use GMP;
 
 class RSAEncryptionService
 {
-    /** Fixed public exponent (standard choice: Fermat prime F4). */
+    
     private const PUBLIC_EXPONENT = 65537;
 
-    /** Miller-Rabin rounds — 40 gives a false-positive probability of ~4^-40. */
     private const MR_ROUNDS = 40;
 
     private HashingService $hasher;

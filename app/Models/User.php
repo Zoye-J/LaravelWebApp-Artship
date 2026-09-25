@@ -39,25 +39,19 @@ class User extends Authenticatable
         'role' => 'user',
     ];
 
-    /**
-     * Check if a field is encryptable (PUBLIC method for views)
-     */
+
     public function isFieldEncryptable(string $field): bool
     {
         return in_array($field, $this->encryptable);
     }
 
-    /**
-     * Set password attribute with custom hashing
-     */
+
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = app(CustomHashService::class)->make($password);
     }
 
-    /**
-     * Verify password using custom hash
-     */
+
     public function verifyPassword(string $password): bool
     {
         return app(CustomHashService::class)->check($password, $this->password);

@@ -7,18 +7,13 @@ use Illuminate\Support\Str;
 
 trait IntegrityProtected
 {
-    /**
-     * Define which fields need MAC verification
-     * Override this in your model
-     */
+
     protected function getMacProtectedFields(): array
     {
         return $this->macProtected ?? [];
     }
 
-    /**
-     * Boot the trait
-     */
+
     protected static function bootIntegrityProtected()
     {
         static::creating(function ($model) {
@@ -34,10 +29,7 @@ trait IntegrityProtected
         });
     }
 
-    /**
-     * Generate MAC for protected fields
-     * Uses the raw encrypted value from the model's attributes
-     */
+
     public function generateMac(): void
     {
         $fields = $this->getMacProtectedFields();
@@ -59,10 +51,7 @@ trait IntegrityProtected
         }
     }
 
-    /**
-     * Verify MAC for all protected fields
-     * Verifies the MAC against the stored encrypted value
-     */
+
     public function verifyMac(): void
     {
         $fields = $this->getMacProtectedFields();
@@ -71,7 +60,7 @@ trait IntegrityProtected
         foreach ($fields as $field) {
             $macField = $field . '_mac';
             
-            // Skip if no MAC stored
+
             if (empty($this->attributes[$macField] ?? null)) {
                 continue;
             }

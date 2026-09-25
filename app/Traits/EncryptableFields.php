@@ -6,18 +6,13 @@ use App\Services\EncryptionHelper;
 
 trait EncryptableFields
 {
-    /**
-     * Define which fields should be encrypted
-     * Override this in your model
-     */
+
     protected function getEncryptableFields(): array
     {
         return $this->encryptable ?? [];
     }
 
-    /**
-     * Boot the trait
-     */
+  
     protected static function bootEncryptableFields()
     {
         static::creating(function ($model) {
@@ -33,10 +28,7 @@ trait EncryptableFields
         });
     }
 
-    /**
-     * Encrypt all encryptable fields
-     * Stores encrypted values in the model's attributes
-     */
+
     public function encryptFields(): void
     {
         $fields = $this->getEncryptableFields();
@@ -51,10 +43,7 @@ trait EncryptableFields
         }
     }
 
-    /**
-     * Decrypt all encryptable fields
-     * Decrypts values when retrieving from database
-     */
+
     public function decryptFields(): void
     {
         $fields = $this->getEncryptableFields();
@@ -76,10 +65,7 @@ trait EncryptableFields
         }
     }
 
-    /**
-     * Get the raw encrypted value of a field
-     * Used for MAC verification
-     */
+  
     public function getEncryptedValue(string $field): ?string
     {
         // First check if we have the original encrypted value
@@ -87,13 +73,10 @@ trait EncryptableFields
             return $this->original[$field];
         }
         
-        // Otherwise check attributes
         return $this->attributes[$field] ?? null;
     }
 
-    /**
-     * Check if a field is encryptable (PUBLIC method for views)
-     */
+
     public function isFieldEncryptable(string $field): bool
     {
         return in_array($field, $this->getEncryptableFields());

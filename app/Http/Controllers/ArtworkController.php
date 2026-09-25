@@ -38,10 +38,7 @@ class ArtworkController extends Controller
         // Upload image
         $imagePath = $request->file('image')->store('artwork_submissions', 'public');
 
-        // ============================================
-        // PERSON 3: Data is automatically encrypted via trait
-        // No need to manually encrypt here
-        // ============================================
+
         $artwork = ArtworkSubmission::create([
             'user_id' => auth()->id(),
             'course_id' => $course->id,
@@ -134,10 +131,7 @@ class ArtworkController extends Controller
 
     public function index()
     {
-        // ============================================
-        // PERSON 3: Data is automatically decrypted via trait
-        // when retrieved from database
-        // ============================================
+
         $submissions = ArtworkSubmission::with(['user', 'course'])
             ->orderBy('created_at', 'desc')
             ->get();
