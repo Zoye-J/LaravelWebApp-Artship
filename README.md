@@ -19,29 +19,29 @@
 
 **Artship** is a comprehensive Laravel-based e-learning platform designed specifically for art education. It enables artists to teach and learn art through structured courses while providing tools for course management, progress tracking, and community engagement through artwork sharing.
 
-**But more than that** — Artship is a **security-first application** that demonstrates **from-scratch implementation of modern cryptographic algorithms**. Every piece of user data is protected with custom-built encryption, ensuring confidentiality, integrity, and authenticity at every layer of the application.
+**But more than that**, Artship is a **security-first application** that demonstrates **from-scratch implementation of modern cryptographic algorithms**. Every piece of user data is protected with custom-built encryption, ensuring confidentiality, integrity, and authenticity at every layer of the application.
 
-This project was developed as a **CSE447 (Computer Security) Lab Project** at **BRAC University**, combining full-stack web development with practical, hands-on cryptography.
+This project was developed as a **CSE470 and CSE447 (Web Development, Computer Security) Lab Project** at **BRAC University**, combining full-stack web development with practical, hands-on cryptography.
 
 ---
 
 ## **Art Learning Features**
 
 ### **Course Management**
-- **Admin Course Control** — Create, edit, and delete art courses
-- **Category Filtering** — Browse courses by artistic categories (digital painting, watercolor, sculpture, etc.)
-- **Wishlist System** — Save courses for later enrollment
+- **Admin Course Control**: Create, edit, and delete art courses
+- **Category Filtering**: Browse courses by artistic categories (digital painting, watercolor, sculpture, etc.)
+- **Wishlist System**: Save courses for later enrollment
 
 ### **Learning Experience**
-- **Course Enrollment** — One-click enrollment/unenrollment system
-- **Progress Tracker** — Visual progress tracking for each enrolled course
-- **Course Materials** — Upload and manage lecture videos and downloadable PDFs
-- **Course Reviews** — Rate and review completed courses
+- **Course Enrollment**: One-click enrollment/unenrollment system
+- **Progress Tracker**: Visual progress tracking for each enrolled course
+- **Course Materials**: Upload and manage lecture videos and downloadable PDFs
+- **Course Reviews**: Rate and review completed courses
 
 ### **Artwork Portfolio & Community**
-- **Artwork Submission** — Students can upload their final artworks at course completion
-- **Featured Gallery** — Admins can showcase exceptional student artworks
-- **Social Engagement** — Users can like and appreciate featured artworks
+- **Artwork Submission**: Students can upload their final artworks at course completion
+- **Featured Gallery**: Admins can showcase exceptional student artworks
+- **Social Engagement**: Users can like and appreciate featured artworks
 
 ---
 
@@ -64,7 +64,7 @@ This project was developed as a **CSE447 (Computer Security) Lab Project** at **
 
 ---
 
-### ** Security Architecture**
+### **Security Architecture**
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
@@ -72,46 +72,46 @@ This project was developed as a **CSE447 (Computer Security) Lab Project** at **
 ├──────────────────────────────────────────────────────────────────────────┤
 │                                                                          │
 │  1. AUTHENTICATION                                                       │
-│     ├── Custom Password Hashing (PBKDF2 + Salt + SHA-256)               │
-│     ├── Two-Factor Authentication (TOTP + SHA-1 + HMAC)                 │
-│     ├── Secure Session Management (AES-256 + MAC)                       │
-│     └── Role-Based Access Control (Admin/User)                          │
+│     ├── Custom Password Hashing (PBKDF2 + Salt + SHA-256)                │
+│     ├── Two-Factor Authentication (TOTP + SHA-1 + HMAC)                  │
+│     ├── Secure Session Management (AES-256 + MAC)                        │
+│     └── Role-Based Access Control (Admin/User)                           │
 │                                                                          │
 │  2. ENCRYPTION (Asymmetric Only)                                         │
-│     ├── ECC for data encryption (secp256k1 curve)                       │
-│     ├── RSA for digital signatures (2048-bit)                           │
-│     ├── Key Management Module (Generate, Rotate, Revoke, Export)        │
-│     └── Koblitz encoding for ECC message embedding                      │
+│     ├── ECC for data encryption (secp256k1 curve)                        │
+│     ├── RSA for digital signatures (2048-bit)                            │
+│     ├── Key Management Module (Generate, Rotate, Revoke, Export)         │
+│     └── Koblitz encoding for ECC message embedding                       │
 │                                                                          │
 │  3. INTEGRITY                                                            │
-│     ├── HMAC-SHA256 for every encrypted field                           │
-│     ├── Automatic tamper detection on retrieval                         │
-│     ├── Integrity failure logging & flagging                            │
-│     └── MAC verification on every request                               │
+│     ├── HMAC-SHA256 for every encrypted field                            │
+│     ├── Automatic tamper detection on retrieval                          │
+│     ├── Integrity failure logging & flagging                             │
+│     └── MAC verification on every request                                │
 │                                                                          │
 │  4. DATA PROTECTION                                                      │
-│     ├── All user info encrypted at rest (name, email, contact)          │
-│     ├── All posts/courses/artwork encrypted before storage              │
-│     ├── Keys stored encrypted (private keys never plaintext)            │
-│     └── Automatic encryption/decryption via model traits                │
+│     ├── All user info encrypted at rest (name, email, contact)           │
+│     ├── All posts/courses/artwork encrypted before storage               │
+│     ├── Keys stored encrypted (private keys never plaintext)             │
+│     └── Automatic encryption/decryption via model traits                 │
 │                                                                          │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### ** Key Management Module**
+### **Key Management Module**
 
-- **Key Generation** — Generate RSA and ECC key pairs on demand
-- **Key Storage** — Keys stored with metadata (fingerprint, version, purpose)
-- **Key Rotation** — Rotate keys when needed; old keys remain for decryption
-- **Key Revocation** — Revoke compromised keys
-- **Key Export** — Export public keys for sharing
-- **Key Fingerprinting** — SHA-256 fingerprint for each key
+- **Key Generation** : Generate RSA and ECC key pairs on demand
+- **Key Storage** : Keys stored with metadata (fingerprint, version, purpose)
+- **Key Rotation** : Rotate keys when needed; old keys remain for decryption
+- **Key Revocation** : Revoke compromised keys
+- **Key Export** : Export public keys for sharing
+- **Key Fingerprinting** : SHA-256 fingerprint for each key
 
 ---
 
-### ** Encryption at Every Layer**
+### **Encryption at Every Layer**
 
 | Data Type | Algorithm | Protection |
 |-----------|-----------|------------|
@@ -129,48 +129,29 @@ This project was developed as a **CSE447 (Computer Security) Lab Project** at **
 
 ---
 
-### ** Requirements Satisfied (CSE447 Lab)**
-
-| # | Requirement | Implementation |
-|---|-------------|----------------|
-| 1 | Login/Registration |  Custom auth with encrypted data |
-| 2 | User info encrypted before storage |  ECC encryption on all fields |
-| 3 | Passwords hashed + salted |  PBKDF2 with SHA-256 + random salt |
-| 4 | Two-factor authentication |  TOTP from scratch with Google Authenticator |
-| 5 | Key Management Module |  Generate, rotate, revoke, export keys |
-| 6 | Posts encrypted/decrypted |  All models use EncryptableFields trait |
-| 7 | All critical data encrypted |  Database contains only ciphertext |
-| 8 | MAC integrity verification |  HMAC-SHA256 on every protected field |
-| 9 | Asymmetric encryption only |  ECC for data, RSA for signatures |
-| 10 | Two asymmetric algorithms |  ECC (encryption) + RSA (signing) |
-| 11 | Role-Based Access Control |  Admin vs User privileges |
-| 12 | Secure session management |  Encrypted sessions + regeneration |
-
----
-
 ##  **Technology Stack**
 
 ### **Backend**
-- **Laravel 10** — PHP Framework
-- **MySQL** — Database
-- **Eloquent ORM** — Database Management
-- **Blade Templates** — Server-side rendering
+- **Laravel 10** : PHP Framework
+- **MySQL** : Database
+- **Eloquent ORM** : Database Management
+- **Blade Templates** : Server-side rendering
 
 ### **Frontend**
-- **Bootstrap 5** — Responsive design
-- **JavaScript** — Interactive features
-- **CSS3** — Custom styling
+- **Bootstrap 5** : Responsive design
+- **JavaScript** : Interactive features
+- **CSS3** : Custom styling
 
 ### **Custom Security Services**
-- **RSAEncryptionService** — RSA from scratch
-- **ECCEncryptionService** — ECC from scratch
-- **HashingService** — SHA-256 + SHA-1 from scratch
-- **MACService** — HMAC from scratch
-- **CustomHashService** — PBKDF2 password hashing from scratch
-- **TwoFactorService** — TOTP from scratch
-- **EncryptionHelper** — Orchestrates encryption with key management
-- **IntegrityService** — MAC generation and verification
-- **SessionEncryption** — Session data encryption
+- **RSAEncryptionService** : RSA from scratch
+- **ECCEncryptionService** : ECC from scratch
+- **HashingService** :SHA-256 + SHA-1 from scratch
+- **MACService** : HMAC from scratch
+- **CustomHashService** : PBKDF2 password hashing from scratch
+- **TwoFactorService** : TOTP from scratch
+- **EncryptionHelper** : Orchestrates encryption with key management
+- **IntegrityService** : MAC generation and verification
+- **SessionEncryption** : Session data encryption
 
 ---
 
@@ -182,10 +163,10 @@ This project was developed as a **CSE447 (Computer Security) Lab Project** at **
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                            REQUEST FLOW                                 │
 │                                                                         │
-│  Request → Middleware → Controller → Model → Trait → Service → DB      │
+│  Request → Middleware → Controller → Model → Trait → Service → DB       │
 │                                                                         │
 │  ┌──────────────┐                                                       │
-│  │  Middleware  │ ← VerifyMAC, TwoFactorVerified, AdminMiddleware      │
+│  │  Middleware  │ ← VerifyMAC, TwoFactorVerified, AdminMiddleware       │
 │  └──────┬───────┘                                                       │
 │         ↓                                                               │
 │  ┌──────────────┐                                                       │
@@ -197,11 +178,11 @@ This project was developed as a **CSE447 (Computer Security) Lab Project** at **
 │  └──────┬───────┘                                                       │
 │         ↓                                                               │
 │  ┌──────────────┐                                                       │
-│  │    Trait     │ ← Auto-encrypt/decrypt + MAC generation              │
+│  │    Trait     │ ← Auto-encrypt/decrypt + MAC generation               │
 │  └──────┬───────┘                                                       │
 │         ↓                                                               │
 │  ┌──────────────┐                                                       │
-│  │   Service    │ ← RSA, ECC, SHA-256, HMAC, PBKDF2, TOTP              │
+│  │   Service    │ ← RSA, ECC, SHA-256, HMAC, PBKDF2, TOTP               │
 │  └──────┬───────┘                                                       │
 │         ↓                                                               │
 │  ┌──────────────┐                                                       │
@@ -213,15 +194,15 @@ This project was developed as a **CSE447 (Computer Security) Lab Project** at **
 
 ### **Key Design Patterns**
 
-- **Traits** — `EncryptableFields`, `IntegrityProtected` for model-level encryption
-- **Services** — Separate services for each cryptographic function
-- **Key Envelope** — Stores algorithm, key ID, and ciphertext together
-- **Middleware** — Integrity verification at request level
-- **Events** — Laravel model events (`creating`, `updating`, `retrieved`) for automatic encryption/decryption
+- **Traits** : `EncryptableFields`, `IntegrityProtected` for model-level encryption
+- **Services** : Separate services for each cryptographic function
+- **Key Envelope** : Stores algorithm, key ID, and ciphertext together
+- **Middleware** : Integrity verification at request level
+- **Events** : Laravel model events (`creating`, `updating`, `retrieved`) for automatic encryption/decryption
 
 ---
 
-## 📁 **Project Structure**
+## **Project Structure**
 
 ```
 artship/
@@ -354,26 +335,7 @@ echo $user->getEncryptedValue('name'); // Encrypted: "eyJhbGci..."
 3. Rotate existing key
 4. Export public key
 
----
 
-## 📊 **Security Proof**
-
-### **Database View (Encrypted)**
-```
-id | name (encrypted)                                    | name_mac
-1  | eyJhbGciOiJlY2MiLCJrZXlfaWQiOjEsImN0IjoiVHh1...  | 77182100e215...
-```
-
-### **Browser View (Decrypted)**
-```
-Name: John Doe
-Email: john@example.com
-```
-
-### **Session Cookie (Encrypted)**
-```
-artship_session: eyJpdiI6ImFIczR2ZHRFaTFKYmhKeG5XdW5ScFE9PSIs...
-```
 
 ---
 
@@ -416,20 +378,11 @@ artship_session: eyJpdiI6ImFIczR2ZHRFaTFKYmhKeG5XdW5ScFE9PSIs...
 ---
 
 
-##  **Course Information**
-
-- **Course:** CSE447 — Computer Security
-- **Institution:** BRAC University
-- **Semester:** [Your Semester]
-- **Instructor:** [Instructor Name]
-
----
-
 ##  **Important Notes**
 
-1. **All cryptographic algorithms are implemented from scratch** — no built-in encryption/hashing functions were used for the core security features.
+1. **All cryptographic algorithms are implemented from scratch** : no built-in encryption/hashing functions were used for the core security features.
 2. **Only asymmetric encryption is used** for data protection (ECC for data, RSA for signatures).
-3. **Private keys are never stored in plaintext** — they are encrypted before storage.
+3. **Private keys are never stored in plaintext** : they are encrypted before storage.
 4. **Every encrypted field has a corresponding MAC** for integrity verification.
 5. **Session data is encrypted** and protected with MAC.
 
